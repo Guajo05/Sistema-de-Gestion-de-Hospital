@@ -1,5 +1,7 @@
 from app.utils.limpiar_consola import limpiar_pantalla
-from app.controllers.pacientes_controller import (ejecutar_registrar_pacientes, ejecutar_mostrar_pacientes_sin_consulta)
+from app.views.Pacientes import (registrar_pacientes,
+                                 mostrar_historial,
+                                 pacientes_sin_consultas)
 import time
 
 def menu_pacientes():
@@ -7,26 +9,29 @@ def menu_pacientes():
     while True:
         print("--- MENU DE GESTION DE PACIENTES🤒 ---")
         print("1. REGISTRAR PACIENTE.")
-        print("2. VER PACIENTES SIN CONSULTAS.")
-        print("3. VOLVER AL MENU PRINCIPAL.")
-
+        print("2. MOSTRAL HISTORIAL DE PACIENTE")
+        print("3. VER PACIENTES SIN CONSULTAS.")
+        print("4. VOLVER AL MENU PRINCIPAL.")
+        
         try:
             opcion = int(input("\nINGRESA UNA OPCION DEL MENU: "))
 
-            if opcion == 1:
-                ejecutar_registrar_pacientes()
-
-            elif opcion == 2:
-                ejecutar_mostrar_pacientes_sin_consulta()
-
-            elif opcion == 3:
-                time.sleep(1)
-                break
-
-            else: 
-                print("ERROR; ESA OPCION NO ESTA DISPONIBLE EN EL MENU.❎")
-                limpiar_pantalla()
-
         except ValueError:
-            print("❌ERROR; LA OPCION INGRESADA DEBE SER UN NUMERO DEL MENU.")
-            limpiar_pantalla()
+            print("❌ ERROR; LA OPCION DEL MENU DEBE SER UN NUMERO.")
+            time.sleep(2)
+            continue
+
+        if opcion == 1:
+            registrar_pacientes.registrar_paciente()
+
+        elif opcion == 2:
+            mostrar_historial.ver_historial()
+
+        elif opcion == 3:
+            pacientes_sin_consultas.mostrar_pacientes_sin_consulta()
+
+        elif opcion == 4:
+            time.sleep(2)
+            break
+        else:
+            print("ESA OPCION NO EXISTE.")

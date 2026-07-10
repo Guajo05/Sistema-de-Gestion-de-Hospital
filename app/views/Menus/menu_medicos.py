@@ -1,7 +1,5 @@
 from app.utils.limpiar_consola import limpiar_pantalla
-from app.controllers.medicos_controller import (ejecutar_registro_medico, 
-                                            ejecutar_mostrar_medicos_ocupados, 
-                                            ejecutar_consultas_por_medicos)
+from app.views.Medicos import registrar_medicos, medicos_ocupado, consultas_por_medico
 import time
 
 def menu_medicos():
@@ -17,13 +15,13 @@ def menu_medicos():
             opcion = int(input("\nINGRESA UNA OPCION DEL MENU: "))
             
             if opcion == 1:
-                ejecutar_registro_medico()
+                registrar_medicos.registrar_medico()
             
             elif opcion == 2:
-                ejecutar_mostrar_medicos_ocupados()
+                medicos_ocupado.mostrar_medicos_ocupados()
 
             elif opcion == 3:
-                ejecutar_consultas_por_medicos()
+                consultas_por_medico.mostrar_consulta_por_medico()
 
             elif opcion == 4:
                 time.sleep(1)
