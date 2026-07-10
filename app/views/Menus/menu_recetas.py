@@ -1,5 +1,6 @@
 from app.utils.limpiar_consola import limpiar_pantalla
-from app.controllers.recetas_controller import ejecutar_registrar_recetas
+from app.views.Recetas import registrar_recetas
+import time
 
 def menu_recetas():
     limpiar_pantalla()
@@ -12,9 +13,10 @@ def menu_recetas():
             opcion = int(input("INGRESA UNA OPCION DEL MENU: "))
 
             if opcion == 1:
-                ejecutar_registrar_recetas()
+                registrar_recetas.registrar_receta()
             
             elif opcion == 2:
+                time.sleep(2)
                 break
 
             else: 

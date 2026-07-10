@@ -1,6 +1,5 @@
 from app.utils.limpiar_consola import limpiar_pantalla
-from app.controllers.medicamentos_controller import (ejecutar_registrar_medicamento, 
-                                                 ejecutar_mostrar_top_medicamentos)
+from app.views.Medicamentos import (registrar_medicamento, top_medicamentos)
 import time
 
 def menu_medicamentos():
@@ -15,10 +14,10 @@ def menu_medicamentos():
             opcion = int(input("\nINGRESA UNA OPCION DEL MENU: "))
 
             if opcion == 1:
-                ejecutar_registrar_medicamento()
+                registrar_medicamento.registrar_medicamento()
 
             elif opcion == 2:
-                ejecutar_mostrar_top_medicamentos()
+                top_medicamentos.mostrar_top_medicamentos()
 
             elif opcion == 3:
                 time.sleep(1)

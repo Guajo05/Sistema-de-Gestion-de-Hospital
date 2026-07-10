@@ -43,7 +43,7 @@ def menu_principal():
             
             elif opcion == 7:
                 print("GRACIAS POR UTILIZAR NUESTRO SISTEMA.😁🔥👾")
-                time.sleep()
+                time.sleep(2)
                 limpiar_pantalla()
                 break
             else: 
