@@ -29,6 +29,77 @@ class PacienteRepository:
 
             if conn:
                 conn.close()
+    
+    def actualizar_paciente(self, datos):
+        conn = None
+        cursor = None
+        try: 
+            conn = conectar()
+            cursor = conn.cursor()
+            cursor.execute(""" UPDATE Pacientes
+                           SET 
+                           nombre = ?,
+                           edad = ?,
+                           sangre = ?,
+                           ciudad = ?
+                           WHERE id = ?""", (
+                               datos.nombre, 
+                               datos.edad,
+                               datos.sangre,
+                               datos.ciudad,
+                               datos.id))
+            
+            if cursor.rowcount == 0:
+                return None
+            
+            conn.commit()
+
+            registro = cursor.execute(""" SELECT * FROM Pacientes
+                                      WHERE id = ?""", (datos.id,)).fetchone()
+            if registro is None:
+                return None
+            
+            paciente = Paciente(
+                id = registro['id'],
+                nombre = registro['nombre'],
+                edad = registro['edad'],
+                sangre = registro['sangre'],
+                ciudad = registro['ciudad'],
+                estado = registro['estado']
+            )
+            return paciente
+        
+        except Exception as ex:
+            raise ex
+        
+        finally:
+            if cursor:
+                cursor.close()
+
+            if conn:
+                conn.close()
+                
+    def eliminar_paciente(self, id):
+        conn = None
+        cursor = None
+        try: 
+            conn = conectar()
+            cursor = conn.cursor()
+            cursor.execute("""UPDATE Pacientes
+                           SET estado = False
+                           WHERE id = ?""", (id,))
+            conn.commit()
+            return True
+        
+        except Exception as ex:
+            raise ex
+        
+        finally:
+            if cursor:
+                cursor.close()
+
+            if conn:
+                conn.close()
 
     def mostrar_pacientes(self):
         conn = None
@@ -38,7 +109,7 @@ class PacienteRepository:
             conn = conectar()
             cursor = conn.cursor()
             pacientes = []
-            registro = cursor.execute("SELECT * FROM Pacientes").fetchall()
+            registro = cursor.execute("SELECT * FROM Pacientes WHERE estado = True").fetchall()
 
             for fila in registro:
                 paciente = Paciente(
@@ -46,7 +117,8 @@ class PacienteRepository:
                     nombre = fila['nombre'],
                     edad = fila['edad'],
                     sangre = fila['sangre'],
-                    ciudad = fila['ciudad']
+                    ciudad = fila['ciudad'],
+                    estado = fila['estado']
                 )
                 pacientes.append(paciente)
 
