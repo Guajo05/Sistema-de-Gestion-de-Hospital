@@ -19,13 +19,51 @@ class PacienteService:
             return None, 'ESTE TIPO DE SANGRE NO EXISTE.❎'
         
         paciente = Paciente(
-            datos['nombre'], 
-            datos['edad'],
-            datos['sangre'],
-            datos['ciudad']
+            nombre = datos['nombre'], 
+            edad = datos['edad'],
+            sangre = datos['sangre'],
+            ciudad = datos['ciudad'],
+            estado = None
         )
         self.repository.registrar_paciente(paciente)
         return paciente, 'PACIENTE REGISTRADO CORRECTAMENTE.✅'
+    
+    def ejecutar_actualizar_paciente(self, datos):
+        tipos_de_Sangre = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+
+        if datos['nombre'] == '':
+            return None, 'EL NOMBRE DEBER SER OBLIGATORIO.❎'
+        
+        if datos['edad'] < 0:
+            return None, 'LA EDAD DEBE SER POSITIVA.❎'
+        
+        if datos['sangre'] not in tipos_de_Sangre:
+            return None, 'ESTE TIPO DE SANGRE NO EXISTE.❎'
+        
+        paciente = Paciente(
+            id = datos['id'],
+            nombre = datos['nombre'], 
+            edad = datos['edad'],
+            sangre = datos['sangre'],
+            ciudad = datos['ciudad'],
+            estado = None
+        )
+
+        resultado = self.repository.actualizar_paciente(paciente)
+
+        if resultado is None:
+            return None, 'NO SE PUDO ACTUALIZAR LOS DATOS.❎'
+        
+        return resultado, None
+    
+    def ejecutar_eliminar_paciente(self, id):
+        pacientes = self.repository.mostrar_pacientes()
+
+        if not Validar_Datos_Existente(id, pacientes, posicion_id = 0):
+            return False, 'ID INVALIDO.❎'
+        
+        self.repository.eliminar_paciente(id)
+        return True, 'PACIENTE ELIMINADO CORRECTAMENTE.✅'
     
     def ejecutar_mostrar_pacientes(self):
         pacientes = self.repository.mostrar_pacientes()

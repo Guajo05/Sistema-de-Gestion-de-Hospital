@@ -6,6 +6,12 @@ class PacienteController:
 
     def registrar_paciente(self, datos):
         return self.service.ejecutar_registrar_paciente(datos)
+    
+    def actualizar_paciente(self, datos):
+        return self.service.ejecutar_actualizar_paciente(datos)
+    
+    def eliminar_paciente(self, id):
+        return self.service.ejecutar_eliminar_paciente(id)
         
     def mostrar_paciente(self):
         return self.service.ejecutar_mostrar_pacientes()
