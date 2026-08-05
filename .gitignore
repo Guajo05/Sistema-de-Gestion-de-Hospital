@@ -16,3 +16,6 @@ database/
 
 # LOS ARCHIVOS DE CONFIGURACION
 config/
+
+# ENTORNO VIRTUAL
+.env/

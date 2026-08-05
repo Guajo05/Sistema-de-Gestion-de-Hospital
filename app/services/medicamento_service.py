@@ -1,30 +1,55 @@
 from app.models.medicamento import Medicamento
-from app.repositories.medicamento_repository import MedicamentoRepository
+from app.repositories.repository_medicamento import MedicamentoRepository
 
 class MedicamentoService:
     def __init__(self):
         self.repository = MedicamentoRepository()
 
-    def ejecutar_registrar_medicamento(self, datos):
-        if datos['precio'] < 0:
-            return None, 'EL PRECIO INGRESADO ES INVALIDO.❎'
-        
-        if datos['stock'] < 0:
-            return None, 'EL STOCK INGRESADO ES INVALIDO.❎'
-        
+    def ejecutar_registrar_medicamento(self, datos: dict) -> tuple[Medicamento]:
+
+        nombre = datos.get('nombre')
+
+        if not isinstance(nombre, str):
+            return None, 'EL NOMBRE DEBE SER OBLIGATORIO.❎'
+
+        laboratorio = datos.get('laboratorio')
+
+        if not isinstance(laboratorio, str):
+            return None, 'EL NOMBRE DEL LABORATORIO DEBE SER OBLIGATORIO.❎'
+
+        try:
+            precio = float(datos.get("precio"))
+
+        except(TypeError, ValueError):
+            return None, 'EL PRECIO DEBE SER NUMERICO.❎'
+
+        if precio < 0:
+            return None, 'EL PRECIO DEBE SER POSITIVO.❎'
+
+        try:
+            stock = int(datos.get('cantidad'))
+
+        except(TypeError, ValueError):
+            return None, 'LA CANTIDAD DEBE SER UN NUMERO ENTERO.❎'
+
         medicamento = Medicamento(
-            datos['nombre'],
-            datos['laboratorio'],
-            datos['precio'],
-            datos['stock']
+            nombre = nombre.title(),
+            laboratorio = laboratorio.title(),
+            precio = precio,
+            stock = stock
         )
-        self.repository.registrar_medicamento(medicamento)
-        return True, 'EL MEDICAMENTO SE REGISTRO CORRECTAMENTE.✅'
+
+        resultado = self.repository.registrar_medicamento(medicamento)
+        if not resultado:
+            return None, 'ERRO AL REGISTRAR EL MEDICAMENTO.❎'
+
+        return medicamento, 'EL MEDICAMENTO SE REGISTRO CORRECTAMENTE.✅'
+        
     
     def ejecutar_mostrar_medicamento(self):
         medicamentos = self.repository.mostrar_medicamentos()
 
-        if len(medicamentos) == 0:
+        if not medicamentos:
             return None, 'NO HAY MEDICAMENTOS REGISTRADOS.❎'
         
         return medicamentos, None
@@ -32,12 +57,10 @@ class MedicamentoService:
     def ejecutar_top_medicamentos(self):
         medicamentos = self.repository.mostrar_medicamentos()
         
-        if len(medicamentos) > 0:
+        if not medicamentos:
             top_medicamentos = self.repository.top_medicamentos()
-            if len(top_medicamentos) == 0:
+            if top_medicamentos:
                 return None, 'NO ES POSIBLE HACER EL TOP.❎'
-            
             return medicamentos, None
-        
         else:
             return None, 'NO HAY MEDICAMENTOS REGISTRADOS.❎'

@@ -1,7 +1,7 @@
 from app.models.consulta import Consulta
-from app.repositories.consulta_repository import ConsultaRepository
-from app.repositories.medico_repository import MedicoRepository
-from app.repositories.paciente_repository import PacienteRepository
+from app.repositories.repository_consulta import ConsultaRepository
+from app.repositories.repository_medico import MedicoRepository
+from app.repositories.repository_paciente import PacienteRepository
 from app.utils.validar_datos import Validar_Datos_Existente
 from datetime import datetime
 

@@ -1,82 +1,112 @@
 from app.models.medico import Medico
-from app.repositories.medico_repository import MedicoRepository
-from app.repositories.consulta_repository import ConsultaRepository
+from app.repositories.repository_medico import MedicoRepository
+from app.repositories.repository_consulta import ConsultaRepository
 from app.utils.validar_datos import Validar_Datos_Existente
 
 class MedicoService:
     def __init__(self):
         self.medico_repository = MedicoRepository()
         self.consulta_repository = ConsultaRepository()
+        self._turnos = {'Mañana', 'Tarde', 'Noche'}
 
-    def ejecutar_registrar_medico(self, datos):
-        turnos = ['Mañana', 'Tarde', 'Noche']
+    def ejecutar_registrar_medico(self, datos: dict) -> tuple[Medico]:
+        nombre = datos.get('nombre')
 
-        if datos['nombre'] == '':
+        if not isinstance(nombre, str):
             return None, 'EL NOMBRE DEBE SER OBLIGATORIO.❎'
+
+        especialidad = datos.get('especialidad')
         
-        if datos['especialidad'] == '':
+        if not isinstance(especialidad, str):
             return None, 'LA ESPECIALIDAD DEBE SER OBLIGATORIA.❎'
-    
-        if datos['salario'] < 0:
-            return None, 'EL SALARIO DEBE SER POSITIVO.❎'
-        
-        if datos['turno'] not in turnos:
-            return None, 'ESE TURNO NO ESTA DISPONIBLE.❎'
-        
+
+        try:
+            salario = float(datos.get('salario'))
+
+        except (TypeError, ValueError):
+            return None, 'EL SALARIO DEBE SER UN NUMERO.❎'
+
+        turno = str(datos.get('turno')).capitalize()
+
+        if turno not in self._turnos:
+            return None, 'ESTE TURNO NO ESTA DISPONIBLE.❎'
+
         medico = Medico(
-            nombre = datos['nombre'],
-            especialidad = datos['especialidad'],
-            salario = datos['salario'],
-            turno = datos['turno'],
-            estado = None
+            nombre = nombre,
+            especialidad = especialidad,
+            salario = salario,
+            turno = turno
         )
 
-        self.medico_repository.registrar_medico(medico)
-        return medico, 'EL MEDICO SE REGISTRO CORRECTAMENTE.✅'
-    
-    def ejecutar_actualizar_medico(self, datos):
-        turnos = ['Mañana', 'Tarde', 'Noche']
+        resultado = self.medico_repository.registrar_medico(medico)
 
-        if datos['nombre'] == '':
+        if not resultado:
+            return None, 'ERROR AL REGISTRAR MEDICO.❎'
+        
+        return medico, 'MEDICO REGISTRADO CORRECTAMENTE.✅'
+        
+    def ejecutar_actualizar_medico(self, datos: dict) -> tuple[Medico]:
+        if 'id' not in datos:
+            return None, 'ID DEL MEDICO REQUERIDO.❎'
+        
+        try:
+            medico_id = int(datos['id'])
+        
+        except (TypeError, ValueError):
+            return None, 'ID INVALIDO.❎'
+        
+        nombre = datos.get('nombre', '')
+        
+        if not isinstance(nombre, str):
             return None, 'EL NOMBRE DEBE SER OBLIGATORIO.❎'
-        
-        if datos['especialidad'] == '':
+
+        especialidad = datos.get('especialidad')
+
+        if not isinstance(especialidad, str):
             return None, 'LA ESPECIALIDAD DEBE SER OBLIGATORIA.❎'
-    
-        if datos['salario'] < 0:
-            return None, 'EL SALARIO DEBE SER POSITIVO.❎'
         
-        if datos['turno'] not in turnos:
-            return None, 'ESE TURNO NO ESTA DISPONIBLE.❎'
+        try:
+            salario = float(datos.get('salario'))
+
+        except (TypeError, ValueError):
+            return None, 'LA EDAD DEBE SER UN NÚMERO.❎'
+        
+        turno = str(datos.get('turno')).capitalize()
+
+        if turno not in self._turnos:
+            return None, 'ESTE TURNO NO ESTA DISPONIBLE.❎'
         
         medico = Medico(
-            id = datos['id'],
-            nombre = datos['nombre'],
-            especialidad = datos['especialidad'],
-            salario = datos['salario'],
-            turno = datos['turno'],
-            estado = None
+            id = medico_id,
+            nombre = nombre,
+            especialidad = especialidad,
+            salario = salario,
+            turno = turno
         )
+        
         resultado = self.medico_repository.actualizar_medico(medico)
-        
+
         if resultado is None:
             return None, 'NO SE PUDO ACTUALIZAR LOS DATOS.❎'
+
+        return resultado, 'MEDICO ACTUALIZADO CORRECTAMENTE.✅'
         
-        return resultado, None
-    
-    def ejecutar_eliminar_medico(self, id):
+    def ejecutar_eliminar_medico(self, id: int) -> bool:
         medicos = self.medico_repository.mostrar_medicos()
 
         if not Validar_Datos_Existente(id, medicos, posicion_id = 0):
             return False, 'ID INVALIDO.❎'
         
-        self.medico_repository.eliminar_medico(id)
+        eliminado = self.medico_repository.eliminar_medico(id)
+        if not eliminado:
+            return False, 'NO SE PUDO ELIMINAR EL MEDICO.❎'
+
         return True, 'MEDICO ELIMINADO CORRECTAMENTE.✅'
 
     def ejecutar_mostrar_medicos(self):
         medicos = self.medico_repository.mostrar_medicos()
 
-        if len(medicos) == 0:
+        if not medicos:
             return None, 'NO HAY MEDICOS REGISTRADOS.❎'
         
         return medicos, None
@@ -85,7 +115,7 @@ class MedicoService:
     def ejecutar_medicos_ocupados(self):
         medicos = self.medico_repository.medicos_ocupados()
 
-        if len(medicos) == 0:
+        if not medicos:
             return None, 'NO HAY MEDICOS OCUPADOS.❎'
         
         return medicos, None
@@ -93,10 +123,10 @@ class MedicoService:
     def ejecutar_consultas_medicos(self):
         consultas = self.consulta_repository.mostrar_consultas()
 
-        if len(consultas) > 0:
+        if not consultas:
             medicos_consultas = self.medico_repository.consultas_medicos()
             
-            if len(medicos_consultas) == 0:
+            if not medicos_consultas:
                 return None, 'NO HAY MEDICOS REGISTRADOS.❎'
         else:
             return None, 'NO HAY CONSULTAS REGISTRADAS.❎'

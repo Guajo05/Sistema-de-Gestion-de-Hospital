@@ -14,6 +14,7 @@ def registrar_paciente():
     "ciudad":   input("INGRESA LA CIUDAD DEL PACIENTE: ").title()}
 
     paciente, mensaje = controller.registrar_paciente(datos)
+    
     if paciente:
         limpiar_pantalla()
         print(mensaje)
