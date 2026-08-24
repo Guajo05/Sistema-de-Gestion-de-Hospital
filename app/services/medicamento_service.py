@@ -1,6 +1,5 @@
 from app.models.medicamento import Medicamento
 from app.repositories.repository_medicamento import MedicamentoRepository
-
 class MedicamentoService:
     def __init__(self):
         self.repository = MedicamentoRepository()
@@ -53,14 +52,3 @@ class MedicamentoService:
             return None, 'NO HAY MEDICAMENTOS REGISTRADOS.❎'
         
         return medicamentos, None
-    
-    def ejecutar_top_medicamentos(self):
-        medicamentos = self.repository.mostrar_medicamentos()
-        
-        if not medicamentos:
-            top_medicamentos = self.repository.top_medicamentos()
-            if top_medicamentos:
-                return None, 'NO ES POSIBLE HACER EL TOP.❎'
-            return medicamentos, None
-        else:
-            return None, 'NO HAY MEDICAMENTOS REGISTRADOS.❎'

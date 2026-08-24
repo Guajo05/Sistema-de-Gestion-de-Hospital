@@ -1,12 +1,10 @@
 from app.models.medico import Medico
 from app.repositories.repository_medico import MedicoRepository
-from app.repositories.repository_consulta import ConsultaRepository
 from app.utils.validar_datos import Validar_Datos_Existente
 
 class MedicoService:
     def __init__(self):
         self.medico_repository = MedicoRepository()
-        self.consulta_repository = ConsultaRepository()
         self._turnos = {'Mañana', 'Tarde', 'Noche'}
 
     def ejecutar_registrar_medico(self, datos: dict) -> tuple[Medico]:
@@ -69,7 +67,7 @@ class MedicoService:
             salario = float(datos.get('salario'))
 
         except (TypeError, ValueError):
-            return None, 'LA EDAD DEBE SER UN NÚMERO.❎'
+            return None, 'EL SALARIO DEBE SER UN NÚMERO.❎'
         
         turno = str(datos.get('turno')).capitalize()
 
@@ -119,16 +117,3 @@ class MedicoService:
             return None, 'NO HAY MEDICOS OCUPADOS.❎'
         
         return medicos, None
-    
-    def ejecutar_consultas_medicos(self):
-        consultas = self.consulta_repository.mostrar_consultas()
-
-        if not consultas:
-            medicos_consultas = self.medico_repository.consultas_medicos()
-            
-            if not medicos_consultas:
-                return None, 'NO HAY MEDICOS REGISTRADOS.❎'
-        else:
-            return None, 'NO HAY CONSULTAS REGISTRADAS.❎'
-        
-        return medicos_consultas, None

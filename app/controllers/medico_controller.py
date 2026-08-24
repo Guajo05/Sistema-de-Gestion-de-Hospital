@@ -18,6 +18,3 @@ class MedicoController:
         
     def medicos_ocupados(self):
         return self.service.ejecutar_medicos_ocupados()
-        
-    def consultas_medicos(self):
-        return self.service.ejecutar_consultas_medicos()

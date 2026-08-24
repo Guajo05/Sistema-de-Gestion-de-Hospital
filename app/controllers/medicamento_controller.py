@@ -9,6 +9,3 @@ class MedicamentoController:
     
     def mostrar_medicamentos(self):
         return self.service.ejecutar_mostrar_medicamento()
-    
-    def top_medicamentos(self):
-        return self.service.ejecutar_top_medicamentos()

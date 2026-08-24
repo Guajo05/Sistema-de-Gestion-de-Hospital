@@ -121,9 +121,3 @@ class PacienteService:
             return None, 'ESTE PACIENTE NO TIENE HISTORIAL DE CONSULTAS.❎'
         
         return historial, None
-
-    def ejecutar_pacientes_sin_consultas(self):
-        pacientes = self.repository.pacientes_sin_consultas()
-        if not pacientes:
-            return None, 'TODOS LOS PACIENTES TIENEN CONSULTAS.❎'
-        return pacientes, None

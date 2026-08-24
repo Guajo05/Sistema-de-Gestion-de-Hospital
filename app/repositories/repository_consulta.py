@@ -5,41 +5,46 @@ from app.models.receta import Receta
 from app.models.medicamento import Medicamento
 from app.database.conexion import SeccionLocal
 from sqlalchemy import select, func
+from sqlalchemy.exc import SQLAlchemyError
 from app.dto.mostrar_consulta_dto import MostrarConsultaDto
-
 class ConsultaRepository:
-    def registrar_consulta(self, consulta):
+    def registrar_consulta(self, consulta) -> bool:
         with SeccionLocal() as Seccion:
-            Seccion.add(consulta)
-            Seccion.commit()
-            return True
+            try:
+                Seccion.add(consulta)
+                Seccion.commit()
+                return True
+            except SQLAlchemyError:
+                Seccion.rollback()
+                return False
+
+    def _a_dto(self, c: Consulta) -> MostrarConsultaDto:
+        return MostrarConsultaDto(
+            id=c.id,
+            costo=c.costo,
+            fecha=c.fecha,
+            diagnostico=c.diagnostico,
+            paciente=c.paciente.nombre if c.paciente else None,
+            medico=c.medico.nombre if c.medico else None,
+        )
 
     def mostrar_consultas(self):
         with SeccionLocal() as Seccion:
-            stmt = select(Consulta)
+            stmt = select(Consulta).order_by(Consulta.fecha.asc())
             resultado = Seccion.execute(stmt).scalars().all()
+            return [self._a_dto(c) for c in resultado]
 
-            consultas = []
-
-            for c in resultado:
-                consulta = MostrarConsultaDto(
-                    id = c.id,
-                    costo = c.costo,
-                    fecha = c.fecha
-                )
-                consultas.append(consulta)
-            return consultas
-
-    def consulta_mas_cara(self):
+    def buscar_consulta(self, fecha_inicio, fecha_final):
         with SeccionLocal() as Seccion:
-            subq = select(func.max(Consulta.costo)).scalar_subquery()
-            consulta = (Seccion.query(Consulta)
-                        .join(Medico, Consulta.medico_id == Medico.id)
-                        .join(Paciente, Consulta.paciente_id == Paciente.id)
-                        .filter(Consulta.costo == subq).first())
-            return consulta
+            stmt = (
+                select(Consulta)
+                .where(Consulta.fecha >= fecha_inicio, Consulta.fecha <= fecha_final)
+                .order_by(Consulta.fecha.desc())
+            )
+            resultado = Seccion.execute(stmt).scalars().all()
+            return [self._a_dto(c) for c in resultado]
 
-    def mostral_historial(self, id):
+    def mostrar_historial(self, id):
         with SeccionLocal() as Seccion:
             historial = (Seccion.query(
                                         Consulta.costo,
@@ -54,13 +59,3 @@ class ConsultaRepository:
                                         .order_by(Consulta.fecha.desc())
                                         .all())
             return historial
-
-    def estadisticas(self):
-        with SeccionLocal() as Seccion:
-            estadistica = (Seccion.query(
-                                        func.min(Consulta.costo).label("barata"),
-                                        func.max(Consulta.costo).label("cara"),
-                                        func.sum(Consulta.costo).label("total"),
-                                        func.avg(Consulta.costo).label("promedio"))
-                                        .one())
-            return estadistica

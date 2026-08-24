@@ -2,17 +2,21 @@ from app.database.conexion import SeccionLocal
 from app.models.medico import Medico
 from app.models.consulta import Consulta
 from sqlalchemy import (select, func)
-
+from sqlalchemy.exc import SQLAlchemyError
 class MedicoRepository:
-    def registrar_medico(self, medico):
+    def registrar_medico(self, medico) -> bool:
         with SeccionLocal() as Seccion:
-            Seccion.add(medico)
-            Seccion.commit()
-            return True
+            try:
+                Seccion.add(medico)
+                Seccion.commit()
+                return True
+            except SQLAlchemyError:
+                Seccion.rollback()
+                return False
 
     def mostrar_medicos(self):
         with SeccionLocal() as Seccion:
-            stmt = select(Medico)
+            stmt = select(Medico).where(Medico.estado == True)
             medicos = Seccion.execute(stmt).scalars().all()
             return medicos
         
@@ -27,21 +31,30 @@ class MedicoRepository:
             medico.especialidad = datos.especialidad
             medico.salario = datos.salario
             medico.turno = datos.turno
-            medico.estado = datos.estado
 
-            Seccion.commit()
-            return medico
+            try:
+                Seccion.commit()
+                return medico
+            
+            except SQLAlchemyError:
+                Seccion.rollback()
+                return None
 
-    def eliminar_medico(self, id):
-            with SeccionLocal() as Seccion:
-                medico = Seccion.get(Medico, id)
-    
-                if medico is None:
-                    return None
-    
-                medico.estado = False
+    def eliminar_medico(self, id) -> bool:
+        with SeccionLocal() as Seccion:
+            medico = Seccion.get(Medico, id)
+
+            if medico is None:
+                return False
+
+            medico.estado = False
+
+            try:
                 Seccion.commit()
                 return True
+            except SQLAlchemyError:
+                Seccion.rollback()
+                return False
 
     def medicos_ocupados(self):
         with SeccionLocal() as Seccion:

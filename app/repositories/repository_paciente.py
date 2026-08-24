@@ -1,7 +1,7 @@
 from app.models.paciente import Paciente
 from app.models.consulta import Consulta
 from app.database.conexion import SeccionLocal
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.exc import SQLAlchemyError
 
 class PacienteRepository:
@@ -17,7 +17,7 @@ class PacienteRepository:
 
     def mostrar_pacientes(self) -> list[Paciente]:
         with SeccionLocal() as Seccion:
-            stmt = select(Paciente)
+            stmt = select(Paciente).where(Paciente.estado == True)
             pacientes = Seccion.execute(stmt).scalars().all()
             return pacientes
 
@@ -32,7 +32,6 @@ class PacienteRepository:
             paciente.edad = datos.edad
             paciente.ciudad = datos.ciudad
             paciente.sangre = datos.sangre
-            paciente.estado = datos.estado
 
             try:
                 Seccion.commit()
@@ -73,12 +72,3 @@ class PacienteRepository:
                 .all())
             
             return consultas
-
-    def pacientes_sin_consultas(self):
-        with SeccionLocal() as Seccion:
-            subq = select(Consulta.paciente_id).distinct().scalar_subquery()
-            
-            pacientes = (Seccion.query(Paciente)
-                         .filter(Paciente.id.not_in(subq))
-                         .all())
-            return pacientes

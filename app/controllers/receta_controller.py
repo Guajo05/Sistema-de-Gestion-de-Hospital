@@ -6,3 +6,6 @@ class RecetaController:
 
     def registrar_receta(self, datos):
         return self.service.ejecutar_registrar_receta(datos)
+
+    def mostrar_recetas(self):
+        return self.service.ejecutar_mostrar_recetas()
