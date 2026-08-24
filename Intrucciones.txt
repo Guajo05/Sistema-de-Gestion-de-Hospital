@@ -1,0 +1,14 @@
+MODERN CARE CLINIC - Sistema de Gestión Hospitalaria
+
+== INSTRUCCIONES ==
+1. Descomprime este archivo en cualquier carpeta de tu PC.
+2. Ejecuta "ModernCareClinic.exe".
+3. La primera vez que se ejecute, se creará automáticamente la base de datos "SistemaHospitalario.db" en la misma carpeta.
+4. Para desinstalar, simplemente elimina toda la carpeta donde descomprimiste el archivo.
+
+== REQUISITOS ==
+- No requiere instalación previa de Python ni de ningún otro programa.
+- Funciona en Windows 7, 8, 10 y 11 (64 bits).
+
+== SOPORTE ==
+Si tienes problemas, contacta a [tu correo o teléfono].

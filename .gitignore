@@ -8,14 +8,13 @@ __pycache__/
 *.pyo
 *.pyd
 
-# LOS REPORTES GENERADOS POR EL SISTEMA
-reports/
-
-# LOS ARCHIVOS QUE CONTIENEN INFORMACION DE LA BASE DE DATOS
-database/
-
 # LOS ARCHIVOS DE CONFIGURACION
 config/
 
 # ENTORNO VIRTUAL
 .venv/
+
+# CARPETAS DE LOS EJECUTABLES
+build/
+dist/
+ModernCareClinic.spec
